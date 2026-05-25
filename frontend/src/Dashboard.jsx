@@ -5,24 +5,36 @@ export default function Dashboard() {
   const [records, setRecords] = useState([]);
   const [sourceType, setSourceType] = useState('SAP');
   const [loading, setLoading] = useState(false);
+  
+  // Dynamic state instead of hardcoded ID
+  const [companyId, setCompanyId] = useState(null);
 
-  // Hardcoded for the prototype. In a real app, this comes from the authenticated user.
-  const COMPANY_ID = 1; 
-
-  const fetchPendingRecords = async () => {
+  const fetchInitialData = async () => {
     try {
-      const response = await axios.get('https://breathe-esg-backend-nnxo.onrender.com/api/pending-reviews/');
-      setRecords(response.data);
+      // 1. Autonomously fetch the first available company from the DB
+      const companyRes = await axios.get('https://breathe-esg-backend-nnxo.onrender.com/api/companies/');
+      if (companyRes.data.length > 0) {
+        setCompanyId(companyRes.data[0].id);
+      }
+
+      // 2. Fetch the pending records
+      const recordsRes = await axios.get('https://breathe-esg-backend-nnxo.onrender.com/api/pending-reviews/');
+      setRecords(recordsRes.data);
     } catch (error) {
-      console.error("Error fetching records", error);
+      console.error("Error fetching initial data", error);
     }
   };
 
   useEffect(() => {
-    fetchPendingRecords();
+    fetchInitialData();
   }, []);
 
   const handleFileUpload = (e) => {
+    if (!companyId) {
+      alert("No company found in the database. Please ensure the backend is seeded.");
+      return;
+    }
+
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       const reader = new FileReader();
@@ -32,17 +44,18 @@ export default function Dashboard() {
         
         try {
           await axios.post('https://breathe-esg-backend-nnxo.onrender.com/api/ingest/', {
-            company_id: COMPANY_ID,
+            company_id: companyId, // Now passing the dynamic ID
             source_type: sourceType,
             csv_data: csvData
           });
           alert('Data ingested successfully');
-          fetchPendingRecords();
+          fetchInitialData();
         } catch (error) {
-          alert('Upload failed. Did you create a Company in the Django admin panel?');
+          alert('Upload failed. Please check the console for details.');
+          console.error(error);
         } finally {
           setLoading(false);
-          e.target.value = null; // reset the input
+          e.target.value = null; 
         }
       };
       reader.readAsText(uploadedFile);
@@ -52,7 +65,7 @@ export default function Dashboard() {
   const handleReview = async (id, status) => {
     try {
       await axios.patch(`https://breathe-esg-backend-nnxo.onrender.com/api/review/${id}/`, { status });
-      fetchPendingRecords(); // refresh the table
+      fetchInitialData(); 
     } catch (error) {
       console.error("Error updating record", error);
     }
@@ -78,9 +91,10 @@ export default function Dashboard() {
           type="file" 
           accept=".csv" 
           onChange={handleFileUpload} 
-          disabled={loading}
+          disabled={loading || !companyId} // Prevents upload if database is empty
         />
         {loading && <span style={{ marginLeft: '10px' }}>Processing...</span>}
+        {!companyId && <span style={{ marginLeft: '10px', color: 'red' }}>Connecting to database...</span>}
       </div>
 
       <h2>Pending Audit Reviews</h2>
