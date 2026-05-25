@@ -1,6 +1,21 @@
-Volume,Unit,Fuel_Type,Date
-1500,Liters,Diesel,2026-03-01
-2300,Liters,Petrol,2026-03-05
-450,Liters,Diesel,2026-03-12
-890,Liters,Diesel,2026-03-20
-1100,Liters,Petrol,2026-03-25
+Bukrs,Werks,Bldat,Budat,Bwart,Matnr,MAKTX,Menge,MEINS,Kostl,Txt50
+1000,MP01,01.01.2026,03.01.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),2150.000,L,CC-OPS-01,January fleet refuel - Plant Mumbai
+1000,MP01,08.01.2026,10.01.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),890.000,L,CC-OPS-02,Generator backup fuel top-up
+1000,MP02,12.01.2026,14.01.2026,201,FUEL-PET-001,Motor Spirit (Petrol),340.000,L,CC-VEH-01,Staff vehicle pool refuel
+1000,MP01,15.01.2026,17.01.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),3100.000,L,CC-OPS-01,January mid-month refuel
+1000,MP02,20.01.2026,22.01.2026,201,FUEL-CNG-001,Compressed Natural Gas (CNG),410.000,KG,CC-VEH-02,CNG vehicle fleet fill
+1000,MP01,25.01.2026,27.01.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),1750.000,L,CC-OPS-01,End January refuel - Plant Mumbai
+1000,MP01,02.02.2026,04.02.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),2200.000,L,CC-OPS-01,February fleet refuel
+1000,MP02,05.02.2026,07.02.2026,201,FUEL-PET-001,Motor Spirit (Petrol),280.000,L,CC-VEH-01,Staff vehicles February
+1000,MP01,10.02.2026,12.02.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),950.000,L,CC-OPS-02,Backup generator refuel February
+1000,MP02,14.02.2026,16.02.2026,201,FUEL-CNG-001,Compressed Natural Gas (CNG),385.000,KG,CC-VEH-02,CNG fleet February
+1000,MP01,18.02.2026,20.02.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),1.800,M3,CC-OPS-01,Bulk diesel - 1.8m3 tank fill (note: unit is cubic metres)
+1000,MP01,22.02.2026,24.02.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),2050.000,L,CC-OPS-01,February end refuel
+1000,MP01,01.03.2026,03.03.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),2300.000,L,CC-OPS-01,March fleet refuel
+1000,MP02,04.03.2026,06.03.2026,201,FUEL-PET-001,Motor Spirit (Petrol),310.000,L,CC-VEH-01,Staff vehicles March
+1000,MP01,08.03.2026,10.03.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),12500.000,L,CC-OPS-01,** OUTLIER - verify against delivery note DO-2026-0891 **
+1000,MP01,12.03.2026,14.03.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),1100.000,L,CC-OPS-02,Generator refuel
+1000,MP02,15.03.2026,17.03.2026,201,FUEL-CNG-001,Compressed Natural Gas (CNG),420.000,KG,CC-VEH-02,CNG fleet March
+1000,MP01,20.03.2026,22.03.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),2150.000,L,CC-OPS-01,March mid-month
+1000,MP01,25.03.2026,27.03.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),1900.000,L,CC-OPS-01,March end refuel
+1000,MP01,28.03.2026,30.03.2026,201,FUEL-HSD-001,Diesel HSD (High Speed Diesel),,L,CC-OPS-01,GR pending - quantity missing from system

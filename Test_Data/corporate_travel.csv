@@ -1,6 +1,25 @@
-Trip_Type,Distance_km,Flight_Class,Date
-Flight,4500,Economy,2026-03-10
-Flight,12000,Business,2026-03-15
-Ground,150,NA,2026-03-18
-Flight,800,Economy,2026-03-22
-Ground,45,NA,2026-03-23
+Trip_ID,Expense_Date,Expense_Type,Origin_IATA,Dest_IATA,Cabin_Class,Nights,Distance_km,Amount,Currency,Dept,Legs
+TR-2026-001,2026-01-08,Air Travel,BOM,DEL,Economy,,,12500,INR,Operations,1
+TR-2026-001,2026-01-09,Hotel,,,,2,,4800,INR,Operations,
+TR-2026-001,2026-01-10,Taxi,,,,,45,650,INR,Operations,
+TR-2026-002,2026-01-14,Air Travel,DEL,LHR,Business,,,85000,INR,Executive,1
+TR-2026-002,2026-01-15,Hotel,,,,3,,21000,INR,Executive,
+TR-2026-002,2026-01-18,Air Travel,LHR,DEL,Business,,,82000,INR,Executive,1
+TR-2026-003,2026-01-22,Air Travel,BOM,BLR,Economy,,,6800,INR,Sales,1
+TR-2026-003,2026-01-22,Taxi,,,,,30,480,INR,Sales,
+TR-2026-004,2026-02-03,Air Travel,BOM,SIN,Economy,,,42000,INR,Business Dev,1
+TR-2026-004,2026-02-04,Hotel,,,,4,,12000,INR,Business Dev,
+TR-2026-004,2026-02-08,Air Travel,SIN,BOM,Economy,,,40000,INR,Business Dev,1
+TR-2026-005,2026-02-12,Air Travel,DEL,BOM,Economy,,,8500,INR,HR,1
+TR-2026-006,2026-02-17,Air Travel,BOM,LHR,Economy,,,68000,INR,Finance,2
+TR-2026-006,2026-02-18,Hotel,,,,5,,32000,INR,Finance,
+TR-2026-006,2026-02-23,Air Travel,LHR,BOM,Economy,,,65000,INR,Finance,1
+TR-2026-007,2026-03-01,Air Travel,BOM,MAA,Economy,,,9200,INR,Operations,1
+TR-2026-007,2026-03-01,Taxi,,,,,25,380,INR,Operations,
+TR-2026-008,2026-03-10,Air Travel,DEL,JFK,Business,,,180000,INR,Executive,1
+TR-2026-008,2026-03-11,Hotel,,,,3,,45000,INR,Executive,
+TR-2026-008,2026-03-14,Air Travel,JFK,DEL,Business,,,175000,INR,Executive,1
+TR-2026-009,2026-03-20,Air Travel,BOM,HYD,Economy,,,7100,INR,Sales,1
+TR-2026-009,2026-03-20,Taxi,,,,,20,320,INR,Sales,
+TR-2026-010,2026-03-25,Rail,,,,,380,2100,INR,Operations,1
+TR-2026-011,2026-03-28,Air Travel,BOM,DXB,Economy,,,55000,INR,Business Dev,1
