@@ -11,7 +11,7 @@ export default function Dashboard() {
 
   const fetchPendingRecords = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/pending-reviews/');
+      const response = await axios.get('https://breathe-esg-backend-nnxo.onrender.com/api/pending-reviews/');
       setRecords(response.data);
     } catch (error) {
       console.error("Error fetching records", error);
@@ -31,7 +31,7 @@ export default function Dashboard() {
         const csvData = event.target.result;
         
         try {
-          await axios.post('http://localhost:8000/api/ingest/', {
+          await axios.post('https://breathe-esg-backend-nnxo.onrender.com/api/ingest/', {
             company_id: COMPANY_ID,
             source_type: sourceType,
             csv_data: csvData
@@ -51,7 +51,7 @@ export default function Dashboard() {
 
   const handleReview = async (id, status) => {
     try {
-      await axios.patch(`http://localhost:8000/api/review/${id}/`, { status });
+      await axios.patch(`https://breathe-esg-backend-nnxo.onrender.com/api/review/${id}/`, { status });
       fetchPendingRecords(); // refresh the table
     } catch (error) {
       console.error("Error updating record", error);
