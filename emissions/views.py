@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from .models import Company, DataSource, EmissionRecord
-from .serializers import EmissionRecordSerializer
+from .serializers import EmissionRecordSerializer, CompanySerializer
 import csv
 from io import StringIO
 from datetime import datetime
@@ -116,3 +116,10 @@ class ReviewRecordView(UpdateAPIView):
     queryset = EmissionRecord.objects.all()
     serializer_class = EmissionRecordSerializer
     lookup_field = 'id'
+
+class CompanyListView(APIView):
+    # Endpoint to dynamically fetch available companies for the frontend
+    def get(self, request):
+        companies = Company.objects.all()
+        serializer = CompanySerializer(companies, many=True)
+        return Response(serializer.data)

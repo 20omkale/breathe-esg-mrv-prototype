@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from .models import Company, DataSource, EmissionRecord
 
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['id', 'name']
+
 class EmissionRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmissionRecord
@@ -12,9 +17,4 @@ class DataSourceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = DataSource
-        fields = '__all__'
-
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company
         fields = '__all__'
