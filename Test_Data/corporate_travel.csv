@@ -1,0 +1,6 @@
+Trip_Type,Distance_km,Flight_Class,Date
+Flight,4500,Economy,2026-03-10
+Flight,12000,Business,2026-03-15
+Ground,150,NA,2026-03-18
+Flight,800,Economy,2026-03-22
+Ground,45,NA,2026-03-23

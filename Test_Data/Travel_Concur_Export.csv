@@ -1,4 +1,0 @@
-Employee_ID,Trip_Type,Flight_Class,Distance_km,Date
-EMP-001,Air,Economy,4500,2024-04-10
-EMP-002,Air,Business,4500,2024-04-12
-EMP-003,Ground,Taxi,45,2024-04-15
