@@ -1,24 +1,30 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Bulletproof fallback: If Vercel drops the env variable, use the live URL automatically.
+const API_BASE = import.meta.env.VITE_API_URL || 'https://breathe-esg-backend-nnxo.onrender.com/api';
+
 export default function Dashboard() {
   const [records, setRecords] = useState([]);
   const [sourceType, setSourceType] = useState('SAP');
   const [loading, setLoading] = useState(false);
   
   const [companyId, setCompanyId] = useState(null);
+  const [connectionError, setConnectionError] = useState(false);
 
   const fetchInitialData = async () => {
     try {
-      const companyRes = await axios.get(`${import.meta.env.VITE_API_URL}/companies/`);
+      const companyRes = await axios.get(`${API_BASE}/companies/`);
       if (companyRes.data.length > 0) {
         setCompanyId(companyRes.data[0].id);
       }
 
-      const recordsRes = await axios.get(`${import.meta.env.VITE_API_URL}/pending-reviews/`);
+      const recordsRes = await axios.get(`${API_BASE}/pending-reviews/`);
       setRecords(recordsRes.data);
+      setConnectionError(false); // Reset error state on success
     } catch (error) {
       console.error("Error fetching initial data", error);
+      setConnectionError(true);
     }
   };
 
@@ -40,7 +46,7 @@ export default function Dashboard() {
         const csvData = event.target.result;
         
         try {
-          await axios.post(`${import.meta.env.VITE_API_URL}/ingest/`, {
+          await axios.post(`${API_BASE}/ingest/`, {
             company_id: companyId,
             source_type: sourceType,
             csv_data: csvData
@@ -61,7 +67,7 @@ export default function Dashboard() {
 
   const handleReview = async (id, status) => {
     try {
-      await axios.patch(`${import.meta.env.VITE_API_URL}/review/${id}/`, { status });
+      await axios.patch(`${API_BASE}/review/${id}/`, { status });
       fetchInitialData(); 
     } catch (error) {
       console.error("Error updating record", error);
@@ -91,7 +97,8 @@ export default function Dashboard() {
           disabled={loading || !companyId}
         />
         {loading && <span style={{ marginLeft: '10px' }}>Processing...</span>}
-        {!companyId && <span style={{ marginLeft: '10px', color: 'red' }}>Connecting to database...</span>}
+        {!companyId && !connectionError && <span style={{ marginLeft: '10px', color: '#f59e0b' }}>Waking up database (this can take 30s)...</span>}
+        {connectionError && <span style={{ marginLeft: '10px', color: 'red' }}>Backend offline. Please refresh the page.</span>}
       </div>
 
       <h2>Pending Audit Reviews</h2>
