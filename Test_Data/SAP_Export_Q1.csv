@@ -1,0 +1,4 @@
+SAP_Doc_ID,Plant_Code,Fuel_Type,Volume,Unit,Date,Cost_Center
+1083492,PL-404,Diesel - Heavy Duty,450.5,Liters,2024-03-01,CC-Logistics
+1083493,PL-404,Unleaded Petrol,120.0,Liters,2024-03-05,CC-Sales
+1083494,PL-405,Diesel - Generator,850.0,Liters,2024-03-12,CC-Facilities
