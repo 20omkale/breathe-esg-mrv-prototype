@@ -124,7 +124,5 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-]
+# Allow the frontend application to securely request data across environments
+CORS_ALLOW_ALL_ORIGINS = True
