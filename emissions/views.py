@@ -354,7 +354,7 @@ class DataIngestionView(APIView):
         if not factor:
             raise ValueError(f"No emission factor for '{fuel_type}'. Add it to the EmissionFactor table.")
 
-        co2e_kg = round(norm_qty * factor.factor_value, 4)
+        co2e_kg = round(norm_qty * float(factor.factor_value), 4)
         is_outlier, reason = check_for_outlier(company, fuel_type, norm_qty)
 
         return EmissionRecord.objects.create(
@@ -419,7 +419,7 @@ class DataIngestionView(APIView):
         if not factor:
             raise ValueError("No emission factor for 'Grid Electricity - India'. Run seed_db.py.")
 
-        co2e_kg = round(kwh * factor.factor_value, 4)
+        co2e_kg = round(kwh * float(factor.factor_value), 4)
         is_outlier, reason = check_for_outlier(company, 'Electricity', kwh)
 
         flag = 'NONE'
@@ -548,7 +548,7 @@ class DataIngestionView(APIView):
             if not factor:
                 raise ValueError("No emission factor for 'Hotel Stay'")
 
-            co2e_kg = round(nights * factor.factor_value, 4)
+            co2e_kg = round(nights * float(factor.factor_value), 4)
 
             return EmissionRecord.objects.create(
                 company=company,
@@ -579,7 +579,7 @@ class DataIngestionView(APIView):
             if not factor:
                 raise ValueError(f"No emission factor for '{factor_name}'")
 
-            co2e_kg = round(distance * factor.factor_value, 4)
+            co2e_kg = round(distance * float(factor.factor_value), 4)
 
             return EmissionRecord.objects.create(
                 company=company,
