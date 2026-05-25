@@ -55,6 +55,7 @@ SAP_FIELD_MAP = {
     'Fuel_Type':          'description',
     'Material_Desc':      'description',
     'Posting_Date':       'posting_date',
+    'Date':               'posting_date',
     'Plant':              'plant',
     'Material_No':        'material_no',
 }
@@ -471,7 +472,7 @@ class DataIngestionView(APIView):
         second, the per-km factor will be wrong. We flag these and let the
         analyst decide.
         """
-        expense_type = row.get('Expense_Type', '').strip()
+        expense_type = (row.get('Expense_Type') or row.get('Trip_Type') or '').strip()
         expense_date = parse_date(row.get('Expense_Date') or row.get('Date', ''))
 
         if not expense_date:
@@ -481,17 +482,21 @@ class DataIngestionView(APIView):
         if expense_type.lower() in ('air travel', 'air', 'flight'):
             origin = row.get('Origin_IATA', '').strip().upper()
             dest = row.get('Dest_IATA', '').strip().upper()
-            cabin = row.get('Cabin_Class', 'Economy').strip()
+            cabin = (row.get('Cabin_Class') or row.get('Flight_Class') or 'Economy').strip()
 
-            if not origin or not dest:
-                raise ValueError("Air travel row missing Origin_IATA or Dest_IATA")
-
-            distance_km = AIRPORT_DISTANCES.get((origin, dest))
-            if not distance_km:
-                raise ValueError(
-                    f"Route {origin}→{dest} not in distance lookup table. "
-                    f"Add it to AIRPORT_DISTANCES in views.py, or pre-compute using the haversine formula."
-                )
+            distance_km = 0.0
+            if origin and dest:
+                distance_km = AIRPORT_DISTANCES.get((origin, dest))
+                if not distance_km:
+                    raise ValueError(
+                        f"Route {origin}→{dest} not in distance lookup table. "
+                        f"Add it to AIRPORT_DISTANCES in views.py, or pre-compute using the haversine formula."
+                    )
+            else:
+                # Fallback to direct distance column
+                distance_km = safe_float(row.get('Distance_km') or row.get('Distance'))
+                if not distance_km or distance_km <= 0:
+                    raise ValueError("Air travel row missing both airport codes and distance")
 
             # DEFRA 2024 Table 10 split: <1500 km = short-haul, ≥1500 km = long-haul
             cabin_lower = cabin.lower()
@@ -515,7 +520,10 @@ class DataIngestionView(APIView):
             is_multi_leg = legs not in ('', '1')
 
             haul = 'Short' if distance_km < 1500 else 'Long'
-            category = f"Flight - {cabin} ({haul}-haul, {origin}→{dest})"
+            if origin and dest:
+                category = f"Flight - {cabin} ({haul}-haul, {origin}→{dest})"
+            else:
+                category = f"Flight - {cabin} ({haul}-haul)"
 
             return EmissionRecord.objects.create(
                 company=company,
@@ -567,7 +575,7 @@ class DataIngestionView(APIView):
             )
 
         # ── Ground transport ─────────────────────────────────────────────────
-        elif expense_type.lower() in ('taxi', 'car', 'ground transport', 'uber', 'cab', 'train', 'rail'):
+        elif expense_type.lower() in ('taxi', 'car', 'ground transport', 'uber', 'cab', 'train', 'rail', 'ground'):
             distance = safe_float(row.get('Distance_km', '') or row.get('Distance', ''))
             if distance <= 0:
                 raise ValueError(f"Ground transport row missing distance")

@@ -100,6 +100,13 @@ class IngestionWorkflowAPITests(APITestCase):
             source_name="GHG Protocol",
             valid_from=date(2023, 1, 1)
         )
+        self.taxi_factor = EmissionFactor.objects.create(
+            activity_type="Taxi/Car",
+            unit_from="km",
+            factor_value=0.148500,
+            source_name="DEFRA 2024",
+            valid_from=date(2024, 4, 1)
+        )
 
     def test_sap_ingestion_success(self):
         # 1. Prepare valid SAP CSV content (matching SAP_FIELD_MAP normalisation)
@@ -145,6 +152,54 @@ class IngestionWorkflowAPITests(APITestCase):
         self.assertEqual(diesel_record.scope, 'SCOPE_1')
         self.assertEqual(diesel_record.raw_quantity, 100.0)
         self.assertEqual(diesel_record.co2e_kg, 268.796)
+
+    def test_backward_compatibility_old_files(self):
+        # 1. Test old simple SAP format
+        csv_content = (
+            "Volume,Unit,Fuel_Type,Date\n"
+            "1500,Liters,Diesel,2026-03-01\n"
+        )
+        csv_file = BytesIO(csv_content.encode('utf-8'))
+        csv_file.name = "old_sap.csv"
+        url = reverse('data-ingestion')
+        response = self.client.post(url, {
+            'company_id': self.company.id,
+            'source_type': 'SAP',
+            'file': csv_file
+        }, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['rows_ingested'], 1)
+
+        # 2. Test old simple Utility format
+        csv_content = (
+            "kWh_Used,Bill_Date\n"
+            "45000,2026-01-31\n"
+        )
+        csv_file = BytesIO(csv_content.encode('utf-8'))
+        csv_file.name = "old_utility.csv"
+        response = self.client.post(url, {
+            'company_id': self.company.id,
+            'source_type': 'UTILITY',
+            'file': csv_file
+        }, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['rows_ingested'], 1)
+
+        # 3. Test old simple Travel format
+        csv_content = (
+            "Trip_Type,Distance_km,Flight_Class,Date\n"
+            "Flight,4500,Economy,2026-03-10\n"
+            "Ground,150,NA,2026-03-18\n"
+        )
+        csv_file = BytesIO(csv_content.encode('utf-8'))
+        csv_file.name = "old_travel.csv"
+        response = self.client.post(url, {
+            'company_id': self.company.id,
+            'source_type': 'TRAVEL',
+            'file': csv_file
+        }, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['rows_ingested'], 2)
 
     def test_sap_ingestion_with_parse_errors(self):
         # One valid row, one row with missing quantity, one row with invalid date
