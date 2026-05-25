@@ -1,27 +1,9 @@
-Data Sources and Real-World Handling
-1. SAP Fuel and Procurement
-Real-World Format: SAP systems typically export data via ALV grids to Excel/CSV or output flat files via IDocs.
+# Data Sources and Real-World Constraints
 
-What I Learned: These exports are notoriously bloated. They include German column headers in legacy configurations and internal organizational data (Company Code, Plant, Cost Center) that are irrelevant to carbon tracking.
+Here is what I found when looking into the three data sources and where things would probably break in a real deployment.
 
-Sample Data Rationale: My sample data includes Plant_Code and Cost_Center to mimic this bloat. The ingestion logic proves we can extract only the Volume and Fuel_Type while ignoring the noise.
+For SAP and Scope 1, I learned that ERP exports are usually really messy and rely on internal company codes. The sample data I used is a clean, post-processed version with just volume, unit, fuel type, and date. In the real world, this would break because actual SAP files have dozens of useless financial columns and weird date formats. We would need a proper mapping screen before ingestion.
 
-Deployment Risks: In production, this would break if the client's SAP localization uses commas for decimal separators (European standard) instead of periods, which would crash the Python float conversion.
+For Utility data and Scope 2, electricity is usually tracked in kilowatt hours on basic portal exports or PDFs. The sample data just has the usage and bill date. The real world problem here is that billing cycles almost never line up with exact calendar months, and utilities send estimated bills that they correct months later. The system would need extra logic to handle those true-ups.
 
-2. Utility Electricity Data
-Real-World Format: Utility portal CSV downloads.
-
-What I Learned: Meter readings are often provided in absolute totals with billing periods that fluctuate (e.g., 28 days one month, 33 days the next).
-
-Sample Data Rationale: The sample data focuses on the kWh_Used and Bill_Date, attaching it to a specific meter number.
-
-Deployment Risks: Real utility data often includes estimated readings that are later corrected. The current system would break or double-count if a client uploads a correction file without a robust upsert/deduplication mechanism.
-
-3. Corporate Travel (Concur/Navan)
-Real-World Format: Expense management API payloads or CSV reports.
-
-What I Learned: The carbon impact of a flight changes drastically depending on the cabin class due to the physical space taken up on the aircraft.
-
-Sample Data Rationale: The sample includes Trip_Type and Flight_Class. The ingestion logic demonstrates judgment by applying a much higher emission multiplier for Business class compared to Economy.
-
-Deployment Risks: Real travel data is incredibly messy. It often omits distances entirely. A production system would break if it cannot automatically geolocate the distance between two raw airport codes.
+For corporate travel and Scope 3, the carbon impact changes a lot depending on flight class. A business class seat takes up more space and has a bigger footprint than economy. My sample data includes trip type, distance, class, and date. In reality, this gets complicated with multi-leg flights where someone flies economy for one leg and business for another. Flat CSV exports usually fail to capture that routing accurately.

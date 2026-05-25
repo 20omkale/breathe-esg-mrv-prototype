@@ -1,11 +1,9 @@
-Engineering Tradeoffs
-To deliver a sharp, highly functional data normalization model within four days, I deliberately chose not to build the following three features:
+# Architectural Tradeoffs
 
-1. Asynchronous File Processing
-Currently, the CSV ingestion happens synchronously in the Django view. If an enterprise client uploads a massive SAP export with hundreds of thousands of rows, the HTTP request will time out. In a real production environment, I would hand this processing off to a background task queue using Celery and Redis, notifying the frontend via WebSockets when the ingestion is complete.
+Because I only had four days, I skipped a few things on purpose to make sure the main data pipeline actually worked and didn't crash.
 
-2. Dynamic Emission Factor API Integration
-The conversion factors (e.g., converting liters of diesel or kWh of electricity to kgCO2e) are hardcoded into the ingestion logic. Real ESG reporting requires pulling these factors from localized, constantly updated databases like the EPA or DEFRA. I traded this dynamic lookup for hardcoded values to keep the prototype self-contained and focused on the data model.
+I did not build a real login system or role based access control. Setting up proper authentication takes way too much time, and I wanted to focus on the core carbon data problem instead of standard web app setup. 
 
-3. Comprehensive Role-Based Access Control (RBAC)
-While the database schema includes a multi-tenant Company model and tracks the user who uploaded the data, the frontend dashboard currently bypasses strict authentication. Building secure JWT authentication and managing analyst vs. client permissions would have consumed time better spent on perfecting the data normalization logic.
+I also skipped background workers like Celery. In real life, a massive CSV will time out if you process it directly while the user waits. But for this demo, I kept the infrastructure simple and just disabled the upload button in the UI while it processes the file.
+
+Lastly, I left out dynamic unit conversions, like changing miles to kilometers or gallons to liters automatically. Data validation pipelines get really messy really fast. I forced a strict template for the prototype to prove the core math works without getting stuck writing code for edge cases.

@@ -1,18 +1,9 @@
-Architectural and Product Decisions
-Ambiguities Resolved
-The core ambiguity was the specific format of the client data. "SAP exports" and "Utility data" are incredibly broad categories. I chose to narrow the scope to ensure a robust, working prototype rather than a fragile system attempting to handle every edge case.
+# Engineering Decisions and Resolved Ambiguities
 
-SAP Data: I assumed a flat-file CSV export originating from an SAP IDoc or ALV grid. I chose to handle Fuel and Procurement volume while explicitly ignoring internal SAP metadata like Plant Codes and Cost Centers.
+During this short sprint, I had to make a few calls to keep the system stable and finish on time.
 
-Utility Data: I opted for the CSV export from a utility provider portal. Parsing PDFs requires OCR which introduces significant error rates unsuitable for a four-day prototype.
+First, I had to figure out how to handle emission factors. Doing the exact math requires huge databases that change all the time. I decided to hardcode standard emission factors for this prototype, like using 2.68 for diesel and 0.4 for grid electricity. If I could ask the product manager, I would want to know if we are going to buy an external API for this later or build our own lookup tables.
 
-Travel Data: I assumed a clean export from a platform like Navan or Concur that already provides the transport mode and distance, resolving the ambiguity of calculating distances from raw IATA airport codes.
+Second, I had to decide what happens if someone uploads a corrected file for a month they already finished. I went with an append-only approach. The system takes the new file as a fresh batch, and the analyst can just reject the old records and approve the new ones. We never delete data so we don't lose the history.
 
-Questions for the Product Manager
-If this were a real sprint planning session, I would ask the PM the following questions before writing any code:
-
-Are we expecting clients to upload these files manually via the dashboard, or are we building SFTP/API integrations for automated ingestion?
-
-For utility data, do we need to prorate emissions if a billing cycle spans across two different calendar months or reporting quarters?
-
-What is our fallback strategy when a travel export only provides airport codes without the flight distance?
+For what to handle, I stuck to Scope 1 fuel volume from SAP, Scope 2 electricity from utilities, and Scope 3 business travel. I completely ignored things like fugitive emissions or purchased goods because that requires complex math and API integrations that just do not fit in a four day window.

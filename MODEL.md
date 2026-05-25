@@ -1,13 +1,9 @@
-# Data Model Architecture
+# Database Model and Architecture
 
-## Multi-Tenancy
-Multi-tenancy is handled at the database level using a centralized `Company` model. Every `DataSource` and `EmissionRecord` is bound to a specific company via a Foreign Key. This ensures strict data isolation between enterprise clients while allowing the application to scale horizontally.
+I set up the database in PostgreSQL focusing on keeping data safe and trackable.
 
-## Unified Emission Record
-Instead of creating separate tables for Fuel, Electricity, and Travel, I implemented a unified `EmissionRecord` model. Real-world ESG reporting requires aggregating total emissions across all scopes. A unified table allows the React dashboard to easily query, filter, and paginate all pending records for an analyst without writing complex SQL unions or hitting multiple API endpoints.
+The first table is Company. Everything links back to this so we keep different tenants totally separate. If this was going to production, we would use row level security so clients could never see each other's data.
 
-## Source of Truth Tracking
-Auditability is the core requirement for this platform. The `DataSource` model tracks the exact origin of the data, including the user who uploaded it and a reference to the raw file or API payload. Every `EmissionRecord` links back to its parent `DataSource`. If an auditor questions a row of normalized data, the analyst can trace it directly back to the original SAP export or Utility PDF.
+Next is DataSource. This tracks exactly where the data came from, who uploaded it, and when. In ESG reporting, knowing the origin of a number is just as important as the number itself. If an uploaded file had errors, we can trace the bad math back to the exact upload batch.
 
-## Unit Normalization
-The `EmissionRecord` explicitly separates `raw_quantity` and `raw_unit` from `normalized_quantity` and `normalized_unit`. This allows analysts to see exactly what came from the source system alongside the normalized output. This separation prevents data loss during the conversion process and builds immense trust with the auditing team.
+The main table is EmissionRecord. It holds both the raw data from the client and our system's normalized output. I mapped the scope category based on the source type right when it gets uploaded. For unit normalization, I made sure to keep both the raw input and the normalized output. Overwriting raw data ruins the audit trail, so we keep everything. Finally, there is a status flag. Records stay pending until an analyst actually approves them, which stops bad automated data from ruining the final carbon footprint.
