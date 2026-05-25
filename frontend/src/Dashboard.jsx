@@ -6,19 +6,16 @@ export default function Dashboard() {
   const [sourceType, setSourceType] = useState('SAP');
   const [loading, setLoading] = useState(false);
   
-  // Dynamic state instead of hardcoded ID
   const [companyId, setCompanyId] = useState(null);
 
   const fetchInitialData = async () => {
     try {
-      // 1. Autonomously fetch the first available company from the DB
-      const companyRes = await axios.get('https://breathe-esg-backend-nnxo.onrender.com/api/companies/');
+      const companyRes = await axios.get(`${import.meta.env.VITE_API_URL}/companies/`);
       if (companyRes.data.length > 0) {
         setCompanyId(companyRes.data[0].id);
       }
 
-      // 2. Fetch the pending records
-      const recordsRes = await axios.get('https://breathe-esg-backend-nnxo.onrender.com/api/pending-reviews/');
+      const recordsRes = await axios.get(`${import.meta.env.VITE_API_URL}/pending-reviews/`);
       setRecords(recordsRes.data);
     } catch (error) {
       console.error("Error fetching initial data", error);
@@ -43,8 +40,8 @@ export default function Dashboard() {
         const csvData = event.target.result;
         
         try {
-          await axios.post('https://breathe-esg-backend-nnxo.onrender.com/api/ingest/', {
-            company_id: companyId, // Now passing the dynamic ID
+          await axios.post(`${import.meta.env.VITE_API_URL}/ingest/`, {
+            company_id: companyId,
             source_type: sourceType,
             csv_data: csvData
           });
@@ -64,7 +61,7 @@ export default function Dashboard() {
 
   const handleReview = async (id, status) => {
     try {
-      await axios.patch(`https://breathe-esg-backend-nnxo.onrender.com/api/review/${id}/`, { status });
+      await axios.patch(`${import.meta.env.VITE_API_URL}/review/${id}/`, { status });
       fetchInitialData(); 
     } catch (error) {
       console.error("Error updating record", error);
@@ -91,7 +88,7 @@ export default function Dashboard() {
           type="file" 
           accept=".csv" 
           onChange={handleFileUpload} 
-          disabled={loading || !companyId} // Prevents upload if database is empty
+          disabled={loading || !companyId}
         />
         {loading && <span style={{ marginLeft: '10px' }}>Processing...</span>}
         {!companyId && <span style={{ marginLeft: '10px', color: 'red' }}>Connecting to database...</span>}
