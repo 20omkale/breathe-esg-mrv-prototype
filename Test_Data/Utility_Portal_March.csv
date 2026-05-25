@@ -1,0 +1,3 @@
+Account_No,Meter_No,Bill_Date,kWh_Used,Billed_Amount,Tariff
+849023-A,M-9923,2024-03-28,14500.25,1850.00,Commercial-T1
+849023-B,M-9924,2024-03-28,8200.50,950.25,Industrial-T2
